@@ -1,4 +1,4 @@
-import { BowlingRumble } from './app';
+import { BowlingRumble } from '.';
 
 let bowlingRumble: BowlingRumble;
 
@@ -7,7 +7,7 @@ beforeEach(() => {
 });
 
 describe('Bowling Game', () => {	
-	const simulate = (times: number, pins: number = 0) => {
+	const simulate = (times: number, pins = 0) => {
 		for (let i = 0; i < times; i++)
 			bowlingRumble.throw(pins);
 	}
