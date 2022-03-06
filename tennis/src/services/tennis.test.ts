@@ -1,56 +1,62 @@
+import { TennisScoreCalculator } from "./tennis";
+
 describe('TennisScoreCalculator', () => {
-	const TennisScoreCalculator = (() => {
-		const SCORES = ['love', 'fifteen', 'thirty', 'forty', 'set'];
-
-		class TennisScoreCalculator {
-			private mapPointsToScore(points: number): string {
-				return SCORES[points];
-			}
-
-			private isAdvantage(player1Points: number, player2Points: number) {
-				return (player1Points + player2Points) >= 7;
-			}
-			
-			private isDeuce(player1Points: number, player2Points: number) {
-				return player1Points === 3 && player2Points === 3;
-			};
+	describe('First player', () => {
+		test.each([
+			['love/love', 0],
+			['fifteen/love', 1],
+			['thirty/love', 2],
+			['forty/love', 3],
+			['set/out', 4],
+		])('the first player score is %s for given %s points', (expected, given) => {
+			const tennisCalculator = new TennisScoreCalculator(given, 0);
 	
-			public score(player1Points: number, player2Points: number): string {
-				if (this.isAdvantage(player1Points, player2Points)) {
-					return player1Points > player2Points ? 'advantage/forty' : 'forty/advantage';
-				}
+			expect(tennisCalculator.score()).toBe(expected);
+		});
+	});
 
-				if (this.isDeuce(player1Points, player2Points)) {
-					return 'deuce/deuce';
-				}
+	describe('Second player', () => {
+		test.each([
+			['love/love', 0],
+			['love/fifteen', 1],
+			['love/thirty', 2],
+			['love/forty', 3],
+			['out/set', 4],
+		])('the second player score is %s for given %s points', (expected, given) => {
+			const tennisCalculator = new TennisScoreCalculator(0, given);
+	
+			expect(tennisCalculator.score()).toBe(expected);
+		});
+	})
 
-				return this.mapPointsToScore(player1Points) + '/' + this.mapPointsToScore(player2Points);
-			}
-		}
+	describe('Game of two players', () => {
+		test.each([
+			['out/set', 1, 4],
+			['thirty/thirty', 2, 2],
+			['ad-out/ad-in', 2, 3],
+			['out/set', 2, 4],
+			['forty/fifteen', 3, 1],
+			['deuce', 3, 3],
+			['ad-out/ad-in', 3, 4],
+			['ad-in/ad-out', 4, 3],
+			['set/out', 5, 3],
+			['ad-in/ad-out', 5, 4],
+			['deuce', 5, 5],
+			['ad-out/ad-in', 5, 6],
+			['ad-in/ad-out', 11, 10],
+			['set/out', 12, 10],
+		])('the score is "%s" when the first player has "%s" points and the second player has "%s" points', (expected, player1Points, player2Points) => {
+			const tennisCalculator = new TennisScoreCalculator(player1Points, player2Points);
+	
+			expect(tennisCalculator.score()).toBe(expected);
+		});
+	})
 
-		return TennisScoreCalculator;
-	})()
-
-	it.each([
-		['love/love', [0, 0]],
-		['fifteen/love', [1, 0]],
-		['thirty/love', [2, 0]],
-		['forty/love', [3, 0]],
-		['set/love', [4, 0]],
-		['love/love', [0, 0]],
-		['love/fifteen', [0, 1]],
-		['love/thirty', [0, 2]],
-		['love/forty', [0, 3]],
-		['love/set', [0, 4]],
-		['thirty/thirty', [2, 2]],
-		['thirty/forty', [2, 3]],
-		['forty/fifteen', [3, 1]],
-		['deuce/deuce', [3, 3]],
-		['advantage/forty', [4, 3]],
-		['forty/advantage', [3, 4]],
-	])('should return "%s" for given "%s" score', (expected, [player1Points, player2Points]) => {
-		const tennisCalculator = new TennisScoreCalculator();
-
-		expect(tennisCalculator.score(player1Points, player2Points)).toBe(expected);
+	describe('Corner Cases', () => {
+		it('should throw an error when any player has negative points', () => {
+			expect(() => {
+				new TennisScoreCalculator(-1, 0);
+			}).toThrowError('Invalid input: points must not be negative');
+		});
 	});
 });
