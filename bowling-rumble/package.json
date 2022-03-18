@@ -1,6 +1,7 @@
 {
-  "name": "mars-rover-typescript",
-  "version": "0.0.0",
+  "name": "bowling-rumble-kata",
+  "version": "0.0.1",
+	"private": true,
   "description": "Bowling Rumble TDD Kata",
   "devDependencies": {
     "@types/jest": "~27.0.2",

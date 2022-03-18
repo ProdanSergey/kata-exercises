@@ -1,8 +1,7 @@
 {
-  "name": "mars-rover-kata",
+  "name": "tic-tac-toe-kata",
   "version": "0.0.1",
-	"private": true,
-  "description": "Mars Rover TDD Kata",
+  "description": "Tic Tac Toe TDD Kata",
   "devDependencies": {
     "@types/jest": "~27.0.2",
     "@types/node": "~16.11.6",

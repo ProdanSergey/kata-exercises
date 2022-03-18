@@ -1,6 +1,7 @@
 {
-  "name": "mars-rover-typescript",
-  "version": "0.0.0",
+  "name": "tennis-kata",
+  "version": "0.0.1",
+	"private": true,
   "description": "Tennis TDD Kata",
   "devDependencies": {
     "@types/jest": "~27.0.2",
