@@ -1,39 +1,48 @@
-type Props = { x: number, y: number };
 
 class Terran {
 	static is(target: unknown, TargetType: typeof Terran): boolean {
 		return target instanceof TargetType;
 	}
 
-	private readonly props: Props;
+	private readonly _x: number;
+	private readonly _y: number;
 	
-	constructor(props: Props) {
-		this.props = props;
+	constructor(x: number, y: number) {
+		this._x = x;
+		this._y = y;
 	}
 	
 	public x() {
-		return this.props.x;
+		return this._x;
 	}
 	public y() {
-		return this.props.y;
+		return this._y;
 	}
 }
 
 export class Alive extends Terran {
+	readonly _type = 'alive';
+
 	public die(): Dead {
-		return new Dead({ x: this.x(), y: this.y()})
+		return new Dead(this.x(), this.y())
 	}
 }
 export class Dead extends Terran {
+	readonly _type = 'dead';
+
 	public alive(): Alive {
-		return new Alive({ x: this.x(), y: this.y()})
+		return new Alive(this.x(), this.y())
 	}
 }
 
-type Terra<T = Terran> = T[][];
+export type Terra<T = Terran> = T[][];
 
 class Universe {
 	constructor(private readonly terra: Terra) {}
+	
+	public copy(): Universe {
+		return new Universe(this.terra.map(row => row.map(terran => terran)));
+	}
 
 	public population(): Terra {
 		return JSON.parse(JSON.stringify(this.terra));
@@ -81,11 +90,7 @@ class Universe {
 
 export class GameOfLive {
 	static terraform(terra: Terra<typeof Terran>): Universe {
-		return new Universe(terra.map((row, x) => row.map((Terran, y) => new Terran({x, y}))));
-	}
-
-	private static copy(universe: Universe): Universe {
-		return GameOfLive.terraform(universe.population().map(row => row.map(() => Dead)));
+		return new Universe(terra.map((row, x) => row.map((Terran, y) => new Terran(x, y))));
 	}
 	
 	private target: Universe;
@@ -93,21 +98,31 @@ export class GameOfLive {
 
 	constructor(universe: Universe) {
 		this.target = universe;
-		this.destination = GameOfLive.copy(universe);
+		this.destination = universe.copy();
 	}
 
 	public evolve(): Terra {
 		for (const terran of this.target) {
-			this.spare(terran)
-			this.resurrect(terran)
+			this.underpopulation(terran)
+			this.survive(terran)
+			this.reproduction(terran)
+			this.overpopulation(terran)
 		};
 
-		this.target = this.destination;
-
-		return this.target.population();
+		return (this.target = this.destination.copy()).population();
 	}
 
-	private spare(terran: Terran): void {
+	private underpopulation(terran: Terran): void {
+		if (Terran.is(terran, Dead)) return;
+
+		const neighbors = this.neighbors(terran);
+
+		if (neighbors < 2) {
+			this.destination.populate((terran as Alive).die())
+		}
+	} 
+
+	private survive(terran: Terran): void {
 		if (Terran.is(terran, Dead)) return;
 
 		const neighbors = this.neighbors(terran);
@@ -117,13 +132,23 @@ export class GameOfLive {
 		}
 	} 
 
-	private resurrect(terran: Terran): void {
+	private reproduction(terran: Terran): void {
 		if (Terran.is(terran, Alive)) return;
 
 		const neighbors = this.neighbors(terran);
 
 		if (neighbors === 3) {
 			this.destination.populate((terran as Dead).alive())
+		}
+	} 
+
+	private overpopulation(terran: Terran): void {
+		if (Terran.is(terran, Dead)) return;
+
+		const neighbors = this.neighbors(terran);
+
+		if (neighbors > 3) {
+			this.destination.populate((terran as Alive).die())
 		}
 	} 
 
