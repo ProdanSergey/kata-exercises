@@ -1,82 +1,77 @@
-
 class Terran {
-	static is(target: unknown, TargetType: typeof Terran): boolean {
-		return target instanceof TargetType;
+	static is(target: unknown, Constructor: typeof Terran): boolean {
+		return target instanceof Constructor;
 	}
-
-	private readonly _x: number;
-	private readonly _y: number;
+	constructor(private readonly x: number, private readonly y: number) {}
 	
-	constructor(x: number, y: number) {
-		this._x = x;
-		this._y = y;
+	public lat(): number {
+		return this.x;
 	}
-	
-	public x() {
-		return this._x;
+	public long(): number {
+		return this.y;
 	}
-	public y() {
-		return this._y;
+	public replicate(): Terran {
+		return new (this.constructor as typeof Terran)(this.lat(), this.long());
 	}
 }
 
 export class Alive extends Terran {
-	readonly _type = 'alive';
+	readonly condition = 'alive';
 
 	public die(): Dead {
-		return new Dead(this.x(), this.y())
+		return new Dead(this.lat(), this.long());
 	}
 }
 export class Dead extends Terran {
-	readonly _type = 'dead';
+	readonly condition = 'dead';
 
 	public alive(): Alive {
-		return new Alive(this.x(), this.y())
+		return new Alive(this.lat(), this.long());
 	}
 }
 
-export type Terra<T = Terran> = T[][];
+type Terra<T = Terran> = T[][];
 
 class Universe {
 	constructor(private readonly terra: Terra) {}
 	
-	public copy(): Universe {
-		return new Universe(this.terra.map(row => row.map(terran => terran)));
+	public replicate(): Universe {
+		return new Universe(this.terra.map(latitude => latitude.map(terran => terran.replicate())));
 	}
 
 	public population(): Terra {
 		return JSON.parse(JSON.stringify(this.terra));
 	}
 
-	public find(x: number, y: number): Terran | undefined {
-		return this.terra[x]?.[y];
+	public find(lat: number, long: number): Terran | undefined {
+		return this.terra[lat]?.[long];
 	}
 
-	public populate(terran: Terran) {
-		this.terra[terran.x()][terran.y()] = terran;
+	public settle(terran: Terran): void {
+		this.terra[terran.lat()][terran.long()] = terran;
 	}
 
 	public [Symbol.iterator]() {
-		let rowId = 0, colId = 0;
+		let lat = 0, long = 0;
 
-		const next = (rowId: number, colId: number): Terran | undefined => {			
-			if (!this.terra[rowId]) {
+		const next = (lat: number, long: number): Terran | undefined => {			
+			if (!this.terra[lat]) {
 				return undefined;
 			}
 
-			if (this.terra[rowId][colId]) {
-				return this.find(rowId, colId);
+			if (this.terra[lat][long]) {
+				return this.find(lat, long);
 			}
 
-			return next(rowId + 1, 0);
+			return next(lat + 1, 0);
 		};
 	
 		return {
 			next() {
-				const terran = next(rowId, colId);
+				const terran = next(lat, long);
 
 				if (terran) {
-					[rowId, colId] = [terran.x(), terran.y() + 1];
+					[lat, long] = [terran.lat(), terran.long() + 1];
 				}
  
 				return {
@@ -90,7 +85,7 @@ class Universe {
 
 export class GameOfLive {
 	static terraform(terra: Terra<typeof Terran>): Universe {
-		return new Universe(terra.map((row, x) => row.map((Terran, y) => new Terran(x, y))));
+		return new Universe(terra.map((latitude, x) => latitude.map((Terran, y) => new Terran(x, y))));
 	}
 	
 	private target: Universe;
@@ -98,18 +93,18 @@ export class GameOfLive {
 
 	constructor(universe: Universe) {
 		this.target = universe;
-		this.destination = universe.copy();
+		this.destination = universe.replicate();
 	}
 
 	public evolve(): Terra {
 		for (const terran of this.target) {
-			this.underpopulation(terran)
-			this.survive(terran)
-			this.reproduction(terran)
-			this.overpopulation(terran)
+			this.underpopulation(terran);
+			this.stagnation(terran);
+			this.reproduction(terran);
+			this.overpopulation(terran);
 		};
 
-		return (this.target = this.destination.copy()).population();
+		return (this.target = this.destination.replicate()).population();
 	}
 
 	private underpopulation(terran: Terran): void {
@@ -118,17 +113,17 @@ export class GameOfLive {
 		const neighbors = this.neighbors(terran);
 
 		if (neighbors < 2) {
-			this.destination.populate((terran as Alive).die())
+			this.destination.settle((terran as Alive).die());
 		}
 	} 
 
-	private survive(terran: Terran): void {
+	private stagnation(terran: Terran): void {
 		if (Terran.is(terran, Dead)) return;
 
 		const neighbors = this.neighbors(terran);
 
 		if (neighbors >= 2 && neighbors <= 3) {
-			this.destination.populate(terran)
+			this.destination.settle(terran.replicate());
 		}
 	} 
 
@@ -138,7 +133,7 @@ export class GameOfLive {
 		const neighbors = this.neighbors(terran);
 
 		if (neighbors === 3) {
-			this.destination.populate((terran as Dead).alive())
+			this.destination.settle((terran as Dead).alive());
 		}
 	} 
 
@@ -148,22 +143,22 @@ export class GameOfLive {
 		const neighbors = this.neighbors(terran);
 
 		if (neighbors > 3) {
-			this.destination.populate((terran as Alive).die())
+			this.destination.settle((terran as Alive).die());
 		}
 	} 
 
 	private neighbors(terran: Terran): number {
-		const rowId = terran.x(), colId = terran.y();
+		const lat = terran.lat(), long = terran.long();
 		
 		return [
-			this.target.find(rowId - 1, colId - 1),
-			this.target.find(rowId, colId - 1),
-			this.target.find(rowId - 1, colId),
-			this.target.find(rowId + 1, colId - 1),
-			this.target.find(rowId - 1, colId + 1),
-			this.target.find(rowId + 1, colId),
-			this.target.find(rowId, colId + 1),
-			this.target.find(rowId + 1, colId + 1),
+			this.target.find(lat - 1, long - 1),
+			this.target.find(lat, long - 1),
+			this.target.find(lat - 1, long),
+			this.target.find(lat + 1, long - 1),
+			this.target.find(lat - 1, long + 1),
+			this.target.find(lat + 1, long),
+			this.target.find(lat, long + 1),
+			this.target.find(lat + 1, long + 1),
 		].filter(terran => Terran.is(terran, Alive)).length;
 	}
 }

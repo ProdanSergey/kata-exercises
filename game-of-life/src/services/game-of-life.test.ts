@@ -1,13 +1,15 @@
 import { Alive as A, Dead as D, GameOfLive } from "./game-of-life";
 
 describe("Game of Life", () => {
-	const game = new GameOfLive(GameOfLive.terraform([
+	const universe = GameOfLive.terraform([
 		[D, D, A, D, D],
 		[D, A, A, A, D],
 		[D, D, A, D, D],
 		[D, D, D, D, D],
 		[D, D, D, D, D]	
-	]));
+	]);
+
+	const game = new GameOfLive(universe);
 
 	const testCases = [
 		[[
@@ -38,11 +40,11 @@ describe("Game of Life", () => {
 			[D, A, A, A, D],
 			[D, D, D, D, D]	
 		]]
-	]
+	];
 
 	test.each(testCases)("universe evolve", (given) => {
-		const expected = GameOfLive.terraform(given).population()
+		const expected = GameOfLive.terraform(given).population();
 		
-		expect(game.evolve()).toEqual(expected)
+		expect(game.evolve()).toEqual(expected);
 	})
 })
