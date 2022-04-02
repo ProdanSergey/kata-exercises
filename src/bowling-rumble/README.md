@@ -34,19 +34,3 @@ bowlingRumble.throw(10);
 
 ### Example 3
 1,3,9,0,10,4,3,2,8,5,3,10,10,2,4,10,4,5 -> Total score = 123
-
-
-## Available Scripts
-
-- `clean` - remove coverage data, Jest cache and transpiled files,
-- `prebuild` - lint source files and tests before building,
-- `build` - transpile TypeScript to ES6,
-- `build:watch` - interactive watch mode to automatically transpile source files,
-- `lint` - lint source files and tests,
-- `test` - run tests,
-- `test:watch` - interactive watch mode to automatically re-run tests
-- `dev` - run dev environment
-
-## Copyright
-
-This is an open source [node-typescript-boilerplate](https://github.com/jsynowiec/node-typescript-boilerplate)

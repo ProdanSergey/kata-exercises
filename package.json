@@ -26,7 +26,7 @@
     "prebuild": "npm run lint",
     "build": "tsc -p tsconfig.json",
     "build:watch": "tsc -w -p tsconfig.json",
-    "watch": "concurrently -k \"npm run build:watch\" \"nodemon dist/index.js\"",
+    "dev": "concurrently -k \"npm run build:watch\" \"nodemon dist/index.js\"",
     "lint": "eslint . --ext .ts,.tsx",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
