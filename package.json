@@ -1,0 +1,37 @@
+{
+  "name": "tdd-katas",
+  "version": "0.0.1",
+	"private": true,
+  "description": "TDD Katas",
+  "devDependencies": {
+    "@types/jest": "~27.0.2",
+    "@types/node": "~16.11.6",
+    "@types/sinon": "^10.0.6",
+    "@typescript-eslint/eslint-plugin": "~5.3.0",
+    "@typescript-eslint/parser": "~5.3.0",
+    "eslint": "~8.1.0",
+    "eslint-config-prettier": "~8.3.0",
+    "eslint-plugin-jest": "~25.2.2",
+    "jest": "~27.3.1",
+    "prettier": "~2.4.1",
+    "rimraf": "~3.0.2",
+    "sinon": "^12.0.1",
+    "ts-jest": "~27.0.7",
+    "tsutils": "~3.21.0",
+    "typescript": "~4.4.4"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "clean": "rimraf coverage dist tmp",
+    "prebuild": "npm run lint",
+    "build": "tsc -p tsconfig.json",
+    "build:watch": "tsc -w -p tsconfig.json",
+    "watch": "concurrently -k \"npm run build:watch\" \"nodemon dist/index.js\"",
+    "lint": "eslint . --ext .ts,.tsx",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "tslib": "~2.3.1"
+  }
+}
