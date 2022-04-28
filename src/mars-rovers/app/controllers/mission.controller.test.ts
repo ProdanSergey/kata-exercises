@@ -1,10 +1,11 @@
 import { createSandbox } from "sinon";
-import { Direction } from "../shared";
-import { Mars } from "./adapters/mars";
-import { Rover } from "./adapters/rover";
-import { MarsFactory } from "./factories/mars-factory";
-import { RoverFactory } from "./factories/rover-factory";
-import { MissionControl } from "./mission-control";
+import { Direction } from "../../shared";
+import { Mars } from "../adapters/mars";
+import { Rover } from "../adapters/rover";
+import { MarsFactory } from "../factories/mars-factory";
+import { RoverFactory } from "../factories/rover-factory";
+import { MissionController } from "./mission.controller";
+import { MissionCommandProcessor } from "./mission.processor";
 
 describe('Mission Control', () => {
 	const sandbox = createSandbox();
@@ -20,10 +21,10 @@ describe('Mission Control', () => {
 	});
 
 	it('should execute surface params', () => {
-    const mission = new MissionControl(roverFactory, marsFactory);
+    const mission = new MissionController(roverFactory, marsFactory,  new MissionCommandProcessor());
 
     marsFactory.build.returns(mockedSurface);
-		
+
     mission.execute('5 5');
 
 		expect(marsFactory.build.calledOnceWith(5, 5)).toBe(true);
@@ -31,7 +32,7 @@ describe('Mission Control', () => {
 	});
 
   it('should execute landing position', () => {
-    const mission = new MissionControl(roverFactory, marsFactory);
+    const mission = new MissionController(roverFactory, marsFactory, new MissionCommandProcessor());
 
     marsFactory.build.returns(mockedSurface);
 		
@@ -42,8 +43,8 @@ describe('Mission Control', () => {
     expect(roverFactory.build.notCalled).toBe(true);
 	});
 
-  it('should execute list of commands and launch a rover', () => {
-    const mission = new MissionControl(roverFactory, marsFactory);
+  it('should execute list of commands and launch a vehicle', () => {
+    const mission = new MissionController(roverFactory, marsFactory,  new MissionCommandProcessor());
 
     marsFactory.build.returns(mockedSurface);
     roverFactory.build.returns(mockedRover);

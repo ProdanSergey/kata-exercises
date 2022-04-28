@@ -1,9 +1,10 @@
 /* istanbul ignore file */
 import { RoverFactory } from "./app/factories/rover-factory";
 import { MarsFactory } from './app/factories/mars-factory';
-import { MissionControl } from "./app/mission-control";
+import { MissionController } from "./app/controllers/mission.controller";
+import { MissionCommandProcessor } from "./app/controllers/mission.processor";
 
-const mission = new MissionControl(new RoverFactory(), new MarsFactory());
+const mission = new MissionController(new RoverFactory(), new MarsFactory(), new MissionCommandProcessor());
 
 mission.execute('5 5');
 
