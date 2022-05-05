@@ -1,4 +1,4 @@
-import { createSandbox, SinonStubbedInstance } from "sinon";
+import { assert, createSandbox, SinonStubbedInstance } from "sinon";
 import { Command, Direction } from "../../shared";
 import { Mars } from "./mars";
 import { Radio } from "./radio";
@@ -29,7 +29,7 @@ describe('Rover', () => {
 
 		rover.drive(command);
 
-    expect(radio.produce.calledOnceWithExactly(1, 1, direction)).toBe(true);
+    assert.calledOnceWithExactly(radio.produce, 1, 1, direction);
 	});
 
 	it.each([
@@ -44,7 +44,7 @@ describe('Rover', () => {
 
 		rover.drive(Command.MOVE);
 
-		expect(radio.produce.calledWithExactly(x, y, direction)).toBeTruthy();
+    assert.calledOnceWithExactly(radio.produce, x, y, direction);
 	});
 
 	it('should leave rover where it was before', () => {
@@ -54,7 +54,7 @@ describe('Rover', () => {
 
 		rover.drive('UNKNOWN');
 
-		expect(radio.produce.calledWithExactly(2, 2, Direction.NORTH)).toBeTruthy();
+    assert.calledOnceWithExactly(radio.produce, 2, 2, Direction.NORTH);
 	});
 
 	it('should turn rover around due to breaching the boundaries of the surface', () => {

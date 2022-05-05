@@ -6,7 +6,7 @@ import { Surface } from "../ports/surface";
 
 export class BuildRoverCommand implements Command {
   constructor(
-    public readonly roverInput: string, 
+    public readonly instruction: string, 
     public readonly roverFactory: RoverFactory, 
     public readonly surface: Surface 
   ) {}
@@ -16,7 +16,7 @@ export class BuildRoverCommandHandler implements CommandHandler<Rover> {
   constructor(private readonly command: BuildRoverCommand, ) {}
 
   execute() {
-    const [x, y, direction] = this.command.roverInput.split(' ');
+    const [x, y, direction] = this.command.instruction.split(' ');
 
 		return this.command.roverFactory.build({ 
       x: Number(x), 

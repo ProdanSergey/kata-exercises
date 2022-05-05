@@ -5,9 +5,9 @@ import { LaunchRoverCommand } from "../commands/launch-rover.command";
 import { MarsFactory } from "../factories/mars-factory";
 import { RoverFactory } from "../factories/rover-factory";
 import { Surface } from "../ports/surface";
-import { MissionCommandProcessor } from "./mission.processor";
+import { MissionCommandProcessor } from "./mars-mission.processor";
 
-export class MissionController {
+export class MarsMissionController {
   private surface: Surface;
 	private readonly buffer: string[];
   
@@ -19,8 +19,8 @@ export class MissionController {
 		this.buffer = [];
 	}
 
-	public execute(input: string): void {
-    const bufferSize = this.buffer.push(input);
+	public instruct(instruction: string): void {
+    const bufferSize = this.buffer.push(instruction);
     
     if (!this.surface) {
       return this.buildSurface();
@@ -42,15 +42,15 @@ export class MissionController {
 	}
 
 	private buildVehicle(): Rover {
-    const input = this.buffer.shift();
-    const command = new BuildRoverCommand(input, this.roverFactory, this.surface)
+    const instruction = this.buffer.shift();
+    const command = new BuildRoverCommand(instruction, this.roverFactory, this.surface)
 
     return this.commandProcessor.execute(command)
 	}
 
   private launchVehicle(vehicle: Rover) {
-    const input = this.buffer.shift();
-    const command = new LaunchRoverCommand(input, vehicle)
+    const instruction = this.buffer.shift();
+    const command = new LaunchRoverCommand(instruction, vehicle)
 
     this.commandProcessor.execute(command);
   }

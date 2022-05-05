@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { Command, CommandProcessor } from "../commands/command";
 import { BuildMarsCommand, BuildMarsCommandHandler } from "../commands/build-mars.command";
 import { BuildRoverCommand, BuildRoverCommandHandler } from "../commands/build-rover.command";

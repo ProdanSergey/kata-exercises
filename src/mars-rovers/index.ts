@@ -1,18 +1,18 @@
 /* istanbul ignore file */
 import { RoverFactory } from "./app/factories/rover-factory";
 import { MarsFactory } from './app/factories/mars-factory';
-import { MissionController } from "./app/controllers/mission.controller";
-import { MissionCommandProcessor } from "./app/controllers/mission.processor";
+import { MarsMissionController } from "./app/controllers/mars-mission.controller";
+import { MissionCommandProcessor } from "./app/controllers/mars-mission.processor";
 
-const mission = new MissionController(new RoverFactory(), new MarsFactory(), new MissionCommandProcessor());
+const marsMission = new MarsMissionController(new RoverFactory(), new MarsFactory(), new MissionCommandProcessor());
 
-mission.execute('5 5');
+marsMission.instruct('5 5');
 
-mission.execute('1 2 N');
-mission.execute('LMLMLMLMM');
+marsMission.instruct('1 2 N');
+marsMission.instruct('LMLMLMLMM');
 
-mission.execute('3 3 E');
-mission.execute('MMRMMRMRRM');
+marsMission.instruct('3 3 E');
+marsMission.instruct('MMRMMRMRRM');
 
-mission.execute('1 1 N');
-mission.execute('LMMLMMR');
+marsMission.instruct('1 1 N');
+marsMission.instruct('LMMLMMR');

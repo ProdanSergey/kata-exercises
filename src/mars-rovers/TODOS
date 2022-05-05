@@ -1,0 +1,3 @@
+☐ Move command abstract interfaces to the correct place;
+✔ Mock mission controller processor; @done(22-04-29 18:05)
+✔ Add commands unit test; @done(22-04-29 18:05)

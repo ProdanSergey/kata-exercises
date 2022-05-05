@@ -16,5 +16,7 @@
     "plugin:jest/recommended",
     "prettier"
   ],
-  "rules": {}
+  "rules": {
+    "jest/expect-expect": "off"
+  }
 }
